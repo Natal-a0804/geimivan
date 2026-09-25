@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Животные континентов — игра</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b2e1f 0%, #1c5e3a 100%);
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .game-container {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+            border-radius: 48px;
+            padding: 28px 32px 36px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+            border: 1px solid #a3d8b0;
+        }
+
+        h1 {
+            font-size: 2.6rem;
+            text-align: center;
+            color: #f9f1c0;
+            text-shadow: 4px 4px 0 #1a3a1e, 7px 7px 0 rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .subhead {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #d4eec7;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-shadow: 2px 2px 0 #0e2b14;
+            border-bottom: 2px dashed #7bb87e;
+            padding-bottom: 16px;
+        }
+
+        .task-panel {
+            background: #fef9e3;
+            border-radius: 32px;
+            padding: 24px 28px;
+            box-shadow: inset 0 0 0 2px #d8b87e, 0 12px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 26px;
+            transition: 0.2s;
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .task-badge {
+            background: #2a5c3a;
+            color: #fff3c9;
+            font-weight: 700;
+            font-size: 1.4rem;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            box-shadow: 0 4px 0 #0d2e18;
+            border: 2px solid #aacf9b;
+            flex-shrink: 0;
+        }
+
+        .task-question {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1e3d24;
+            line-height: 1.3;
+            text-shadow: 1px 1px 0 rgba(255, 255, 200, 0.8);
+            flex: 1;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 8px 0 6px;
+        }
+
+        .option-btn {
+            background: #f0e7cf;
+            border: 3px solid #7c9f7c;
+            border-radius: 28px;
+            padding: 16px 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f3a1f;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            box-shadow: 0 6px 0 #527a52, 0 6px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+            line-height: 1.2;
+            min-height: 80px;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #fff8e7;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #527a52, 0 8px 12px rgba(0, 0, 0, 0.25);
+            border-color: #2e7d32;
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #527a52, 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .option-btn.correct {
+            background: #b6e6b0;
+            border-color: #1d6b1d;
+            box-shadow: 0 6px 0 #1d6b1d, 0 8px 12px rgba(0, 0, 0, 0.2);
+            color: #0a2a0a;
+        }
+
+        .option-btn.wrong {
+            background: #f8c8c8;
+            border-color: #b34141;
+            box-shadow: 0 6px 0 #852b2b, 0 8px 12px rgba(0, 0, 0, 0.2);
+            color: #4a0f0f;
+            text-decoration: line-through 2px #b34141;
+        }
+
+        .option-btn:disabled {
+            opacity: 0.9;
+            cursor: not-allowed;
+            filter: saturate(0.7);
+        }
+
+        .feedback {
+            margin-top: 18px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 40px;
+            background: #edf7e7;
+            border-left: 12px solid #558b2f;
+            color: #1f3a1f;
+            box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 68px;
+        }
+
+        .feedback span {
+            font-size: 1.5rem;
+        }
+
+        .reset-area {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        .reset-btn {
+            background: #e9c46a;
+            border: none;
+            border-radius: 60px;
+            padding: 16px 44px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1d3b1d;
+            box-shadow: 0 10px 0 #b38b3a, 0 8px 18px black;
+            cursor: pointer;
+            transition: 0.1s;
+            letter-spacing: 1px;
+            border: 2px solid #ffeab0;
+            text-transform: uppercase;
+        }
+
+        .reset-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #b38b3a, 0 8px 18px black;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 10px 0 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f9f1c0;
+            text-shadow: 2px 2px 0 #0d2e18;
+        }
+
+        .scoreboard span {
+            background: #1d4a2a;
+            padding: 8px 28px;
+            border-radius: 50px;
+            border: 2px solid #dbb86a;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 800px) {
+            .game-container {
+                padding: 20px 16px;
+            }
+            h1 {
+                font-size: 1.9rem;
+            }
+            .task-question {
+                font-size: 1.3rem;
+            }
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .option-btn {
+                font-size: 0.95rem;
+                padding: 14px 6px;
+                min-height: 70px;
+            }
+            .task-badge {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+            .reset-btn {
+                font-size: 1.2rem;
+                padding: 14px 28px;
+            }
+            .feedback {
+                font-size: 1rem;
+                padding: 10px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .task-question {
+                font-size: 1.2rem;
+            }
+            .scoreboard {
+                gap: 16px;
+                font-size: 1rem;
+            }
+            .scoreboard span {
+                padding: 6px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🌍 ЖИВОТНЫЕ КОНТИНЕНТОВ</h1>
+        <div class="subhead">3 задания · 8 вариантов · узнай, кто где живёт</div>
+
+        <!-- Задание 1 -->
+        <div class="task-panel" id="task1-panel">
+            <div class="task-header">
+                <div class="task-badge">1</div>
+                <div class="task-question" id="q1-text">Загрузка...</div>
+            </div>
+            <div class="options-grid" id="options1"></div>
+            <div class="feedback" id="feedback1">
+                <span>🐾</span> Выбери вариант ответа
+            </div>
+        </div>
+
+        <!-- Задание 2 -->
+        <div class="task-panel" id="task2-panel">
+            <div class="task-header">
+                <div class="task-badge">2</div>
+                <div class="task-question" id="q2-text">Загрузка...</div>
+            </div>
+            <div class="options-grid" id="options2"></div>
+            <div class="feedback" id="feedback2">
+                <span>🐾</span> Выбери вариант ответа
+            </div>
+        </div>
+
+        <!-- Задание 3 -->
+        <div class="task-panel" id="task3-panel">
+            <div class="task-header">
+                <div class="task-badge">3</div>
+                <div class="task-question" id="q3-text">Загрузка...</div>
+            </div>
+            <div class="options-grid" id="options3"></div>
+            <div class="feedback" id="feedback3">
+                <span>🐾</span> Выбери вариант ответа
+            </div>
+        </div>
+
+        <!-- Счёт -->
+        <div class="scoreboard">
+            <span id="scoreDisplay">✅ Правильно: 0 / 3</span>
+        </div>
+
+        <div class="reset-area">
+            <button class="reset-btn" id="resetBtn">🔄 Начать заново</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- ДАННЫЕ ИГРЫ ----------
+            const tasks = [
+                {
+                    question: "Какое животное обитает в Африке?",
+                    options: [
+                        "Бизон", "Кенгуру", "Жираф", "Панда", 
+                        "Анаконда", "Коала", "Пингвин", "Лама"
+                    ],
+                    correct: "Жираф",
+                    explanation: "Жираф — типичный обитатель африканской саванны."
+                },
+                {
+                    question: "Где живёт пингвин?",
+                    options: [
+                        "Австралия", "Антарктида", "Африка", "Южная Америка",
+                        "Северная Америка", "Евразия", "Гренландия", "Мадагаскар"
+                    ],
+                    correct: "Антарктида",
+                    explanation: "Пингвины обитают в Антарктиде и прибрежных водах."
+                },
+                {
+                    question: "Какое животное является символом Австралии?",
+                    options: [
+                        "Слон", "Кенгуру", "Тигр", "Зебра",
+                        "Лев", "Олень", "Верблюд", "Медведь"
+                    ],
+                    correct: "Кенгуру",
+                    explanation: "Кенгуру — эндемик Австралии, символ этого континента."
+                }
+            ];
+
+            // ---------- СОСТОЯНИЕ ----------
+            let answered = [false, false, false];      // по индексам: 0,1,2
+            let correctCount = 0;
+            let scoreDisplay = document.getElementById('scoreDisplay');
+
+            // ---------- ФУНКЦИИ ОТРИСОВКИ ----------
+            function renderTask(taskIndex) {
+                const task = tasks[taskIndex];
+                const optionsContainer = document.getElementById(`options${taskIndex + 1}`);
+                const questionEl = document.getElementById(`q${taskIndex + 1}-text`);
+                const feedbackEl = document.getElementById(`feedback${taskIndex + 1}`);
+
+                // Обновляем вопрос
+                questionEl.textContent = task.question;
+
+                // Очищаем контейнер с кнопками
+                optionsContainer.innerHTML = '';
+
+                // Перемешиваем варианты (Fisher-Yates)
+                const shuffled = [...task.options];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+
+                // Создаём кнопки
+                shuffled.forEach(optionText => {
+                    const btn = document.createElement('button');
+                    btn.classList.add('option-btn');
+                    btn.textContent = optionText;
+                    btn.dataset.taskIndex = taskIndex;
+                    btn.dataset.value = optionText;
+
+                    // Если уже отвечали — блокируем кнопки и помечаем правильные/неправильные
+                    if (answered[taskIndex]) {
+                        btn.disabled = true;
+                        if (optionText === task.correct) {
+                            btn.classList.add('correct');
+                        } else {
+                            // Проверяем, выбирал ли пользователь этот вариант (для wrong-подсветки)
+                            // Но мы не храним выбор пользователя, поэтому просто затемняем все неправильные.
+                            // Чтобы отобразить «неправильно», добавим класс wrong только если пользователь выбрал именно этот вариант.
+                            // Нужно хранить выбор. Сделаем просто: все неправильные делаем с классом wrong? 
+                            // Это визуально перегружено. Лучше показывать только правильный ответ и выбранный пользователем.
+                            // Для этого нам нужно знать выбор. Добавим переменную userChoices.
+                            // Переделаем: будем хранить userChoice в замыкании, но так как функция рендера общая,
+                            // добавим массив userChoices.
+                        }
+                    }
+
+                    btn.addEventListener('click', optionClickHandler);
+                    optionsContainer.appendChild(btn);
+                });
+
+                // Если уже отвечали — восстановим визуал выбора
+                if (answered[taskIndex]) {
+                    const userChoice = userChoices[taskIndex];
+                    const allBtns = optionsContainer.querySelectorAll('.option-btn');
+                    allBtns.forEach(btn => {
+                        btn.disabled = true;
+                        const val = btn.dataset.value;
+                        if (val === task.correct) {
+                            btn.classList.add('correct');
+                        } else if (val === userChoice && userChoice !== task.correct) {
+                            btn.classList.add('wrong');
+                        }
+                    });
+                    // Обновляем фидбек
+                    if (userChoice === task.correct) {
+                        feedbackEl.innerHTML = `<span>✅</span> Верно! ${task.explanation}`;
+                    } else {
+                        feedbackEl.innerHTML = `<span>❌</span> Неправильно. Правильный ответ: ${task.correct}. ${task.explanation}`;
+                    }
+                } else {
+                    // Если ещё не отвечали — сброс фидбека
+                    feedbackEl.innerHTML = `<span>🐾</span> Выбери вариант ответа`;
+                }
+            }
+
+            // ---------- ХРАНЕНИЕ ВЫБОРА ПОЛЬЗОВАТЕЛЯ ----------
+            const userChoices = [null, null, null];
+
+            // ---------- ОБРАБОТЧИК КЛИКА ----------
+            function optionClickHandler(event) {
+                const btn = event.currentTarget;
+                const taskIndex = parseInt(btn.dataset.taskIndex, 10);
+                const selectedValue = btn.dataset.value;
+                const task = tasks[taskIndex];
+
+                // Если уже отвечено — игнорируем (но кнопки и так disabled)
+                if (answered[taskIndex]) return;
+
+                // Записываем выбор
+                userChoices[taskIndex] = selectedValue;
+                answered[taskIndex] = true;
+
+                // Блокируем все кнопки в этом задании
+                const optionsContainer = document.getElementById(`options${taskIndex + 1}`);
+                const allBtns = optionsContainer.querySelectorAll('.option-btn');
+                allBtns.forEach(b => b.disabled = true);
+
+                // Подсвечиваем правильный ответ и неправильный выбор
+                allBtns.forEach(b => {
+                    const val = b.dataset.value;
+                    if (val === task.correct) {
+                        b.classList.add('correct');
+                    } else if (val === selectedValue && selectedValue !== task.correct) {
+                        b.classList.add('wrong');
+                    }
+                });
+
+                // Обновляем фидбек
+                const feedbackEl = document.getElementById(`feedback${taskIndex + 1}`);
+                const isCorrect = (selectedValue === task.correct);
+
+                if (isCorrect) {
+                    feedbackEl.innerHTML = `<span>✅</span> Верно! ${task.explanation}`;
+                    correctCount++;
+                } else {
+                    feedbackEl.innerHTML = `<span>❌</span> Неправильно. Правильный ответ: ${task.correct}. ${task.explanation}`;
+                }
+
+                // Обновляем счёт
+                updateScoreDisplay();
+
+                // Проверяем, завершена ли игра (все три задания отвечены)
+                if (answered.every(v => v === true)) {
+                    // Можно показать итог, но счёт уже есть
+                }
+            }
+
+            // ---------- ОБНОВЛЕНИЕ СЧЁТА ----------
+            function updateScoreDisplay() {
+                scoreDisplay.textContent = `✅ Правильно: ${correctCount} / 3`;
+            }
+
+            // ---------- ПОЛНЫЙ СБРОС ИГРЫ ----------
+            function resetGame() {
+                // Сбрасываем состояние
+                answered = [false, false, false];
+                userChoices[0] = userChoices[1] = userChoices[2] = null;
+                correctCount = 0;
+
+                // Перерисовываем все задания
+                for (let i = 0; i < tasks.length; i++) {
+                    renderTask(i);
+                }
+
+                // Обновляем счёт
+                updateScoreDisplay();
+            }
+
+            // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+            function initGame() {
+                // Первоначальная отрисовка всех заданий
+                for (let i = 0; i < tasks.length; i++) {
+                    renderTask(i);
+                }
+                updateScoreDisplay();
+
+                // Навешиваем обработчик на кнопку сброса
+                const resetBtn = document.getElementById('resetBtn');
+                resetBtn.addEventListener('click', resetGame);
+            }
+
+            // Запуск
+            initGame();
+        })();
+    </script>
+</body>
+</html>
